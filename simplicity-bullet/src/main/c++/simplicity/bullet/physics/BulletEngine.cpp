@@ -60,6 +60,8 @@ namespace simplicity
 				Body* body = static_cast<Body*>(collisionObjects[index]->getUserPointer());
 				body->getEntity()->setTransformation(
 						BulletMatrix::toMatrix44(collisionObjects[index]->getWorldTransform()));
+
+				Simplicity::updateWorldRepresentations(*body->getEntity());
 			}
 		}
 
