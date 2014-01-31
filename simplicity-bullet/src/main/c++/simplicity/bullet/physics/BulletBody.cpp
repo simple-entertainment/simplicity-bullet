@@ -17,6 +17,7 @@
 #include <simplicity/math/MathFunctions.h>
 #include <simplicity/model/Mesh.h>
 #include <simplicity/model/Plane.h>
+#include <simplicity/model/shape/Box.h>
 #include <simplicity/model/shape/Cube.h>
 #include <simplicity/model/shape/Sphere.h>
 
@@ -38,6 +39,12 @@ namespace simplicity
 			motionState(NULL),
 			transformation(transformation)
 		{
+			Box* box = dynamic_cast<Box*>(model);
+			if (box != NULL)
+			{
+				bulletModel = new btBoxShape(btVector3(box->getHalfXLength(), box->getHalfYLength(),
+						box->getHalfZLength()));
+			}
 			Cube* cube = dynamic_cast<Cube*>(model);
 			if (cube != NULL)
 			{
@@ -57,7 +64,7 @@ namespace simplicity
 					{
 						points[index] = BulletVector::toBtVector3(vertices[indices[index]].position);
 						points[index + 1] = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
-						points[index + 2] = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
+						points[index + 2] = BulletVector::toBtVector3(vertices[indices[index + 2]].position);
 
 					}
 
@@ -73,7 +80,7 @@ namespace simplicity
 					{
 						btVector3 vertex0 = BulletVector::toBtVector3(vertices[indices[index]].position);
 						btVector3 vertex1 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
-						btVector3 vertex2 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
+						btVector3 vertex2 = BulletVector::toBtVector3(vertices[indices[index + 2]].position);
 						meshData->addTriangle(vertex0, vertex1, vertex2);
 
 					}
@@ -92,16 +99,29 @@ namespace simplicity
 				bulletModel = new btSphereShape(sphere->getRadius());
 			}
 
-			btVector3 localInertia;
-			bulletModel->calculateLocalInertia(material.mass, localInertia);
+			btVector3 localInertia(0.0f, 0.0f, 0.0f);
+			if (dynamic)
+			{
+				bulletModel->calculateLocalInertia(material.mass, localInertia);
+			}
 
 			motionState = new btDefaultMotionState(BulletMatrix::toBtTransform(transformation));
 
 			body = new btRigidBody(material.mass, motionState, bulletModel, localInertia);
 			body->setFriction(material.friction);
 			body->setRestitution(material.restitution);
-			//body->setRollingFriction(material.friction);
+			body->setRollingFriction(material.friction);
 			body->setUserPointer(this);
+
+			if (dynamic)
+			{
+				if (box != NULL)
+				{
+					float minEdgeLength = min(box->getHalfXLength(), min(box->getHalfYLength(), box->getHalfZLength()));
+					body->setCcdMotionThreshold(minEdgeLength);
+					body->setCcdSweptSphereRadius(minEdgeLength * 0.25f);
+				}
+			}
 		}
 
 		BulletBody::~BulletBody()
