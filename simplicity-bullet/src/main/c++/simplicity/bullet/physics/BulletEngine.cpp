@@ -47,11 +47,11 @@ namespace simplicity
 		{
 			if (fixedTimeStep == 0.0f)
 			{
-				//world->stepSimulation(Simplicity::getDeltaTime(), 10); // 10 is magic!
+				world->stepSimulation(Simplicity::getDeltaTime(), 10); // 10 is magic!
 			}
 			else
 			{
-				//world->stepSimulation(fixedTimeStep, 1, fixedTimeStep);
+				world->stepSimulation(fixedTimeStep, 1, fixedTimeStep);
 			}
 
 			btCollisionObjectArray& collisionObjects = world->getCollisionObjectArray();

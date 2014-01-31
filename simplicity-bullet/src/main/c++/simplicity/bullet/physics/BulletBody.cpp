@@ -28,7 +28,7 @@ namespace simplicity
 {
 	namespace bullet
 	{
-		BulletBody::BulletBody(const Material& material, Model* model, const Matrix44& transformation) :
+		BulletBody::BulletBody(const Material& material, Model* model, const Matrix44& transformation, bool dynamic) :
 			body(NULL),
 			bulletModel(NULL),
 			linearAcceleration(0.0f, 0.0f, 0.0f),
@@ -47,19 +47,39 @@ namespace simplicity
 			Mesh* mesh = dynamic_cast<Mesh*>(model);
 			if (mesh != NULL)
 			{
-				btTriangleMesh* meshData = new btTriangleMesh;
-
-				vector<unsigned int> indices = mesh->getIndices();
-				vector<Vertex> vertices = mesh->getVertices();
-				for (unsigned int index = 0; index < indices.size(); index += 3)
+				if (dynamic)
 				{
-					btVector3 vertex0 = BulletVector::toBtVector3(vertices[indices[index]].position);
-					btVector3 vertex1 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
-					btVector3 vertex2 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
-					meshData->addTriangle(vertex0, vertex1, vertex2);
-				}
+					vector<btVector3> points(mesh->getIndices().size());
 
-				bulletModel = new btBvhTriangleMeshShape(meshData, true);
+					vector<unsigned int> indices = mesh->getIndices();
+					vector<Vertex> vertices = mesh->getVertices();
+					for (unsigned int index = 0; index < indices.size(); index += 3)
+					{
+						points[index] = BulletVector::toBtVector3(vertices[indices[index]].position);
+						points[index + 1] = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
+						points[index + 2] = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
+
+					}
+
+					bulletModel = new btConvexHullShape((btScalar*) points.data(), points.size());
+				}
+				else
+				{
+					btTriangleMesh* meshData = new btTriangleMesh;
+
+					vector<unsigned int> indices = mesh->getIndices();
+					vector<Vertex> vertices = mesh->getVertices();
+					for (unsigned int index = 0; index < indices.size(); index += 3)
+					{
+						btVector3 vertex0 = BulletVector::toBtVector3(vertices[indices[index]].position);
+						btVector3 vertex1 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
+						btVector3 vertex2 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
+						meshData->addTriangle(vertex0, vertex1, vertex2);
+
+					}
+
+					bulletModel = new btBvhTriangleMeshShape(meshData, true);
+				}
 			}
 			Plane* plane = dynamic_cast<Plane*>(model);
 			if (plane != NULL)
@@ -72,18 +92,15 @@ namespace simplicity
 				bulletModel = new btSphereShape(sphere->getRadius());
 			}
 
-			if (mesh == NULL)
-			{
-				btVector3 zero(0.0f, 0.0f, 0.0f);
-				bulletModel->calculateLocalInertia(0.0f, zero);
-			}
+			btVector3 localInertia;
+			bulletModel->calculateLocalInertia(material.mass, localInertia);
 
 			motionState = new btDefaultMotionState(BulletMatrix::toBtTransform(transformation));
 
-			body = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(0.0f, motionState, bulletModel));
+			body = new btRigidBody(material.mass, motionState, bulletModel, localInertia);
 			body->setFriction(material.friction);
 			body->setRestitution(material.restitution);
-			body->setRollingFriction(material.friction);
+			//body->setRollingFriction(material.friction);
 			body->setUserPointer(this);
 		}
 

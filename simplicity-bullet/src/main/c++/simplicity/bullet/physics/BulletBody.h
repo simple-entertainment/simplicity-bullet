@@ -28,7 +28,7 @@ namespace simplicity
 		class BulletBody : public Body
 		{
 			public:
-				BulletBody(const Material& material, Model* model, const Matrix44& transformation);
+				BulletBody(const Material& material, Model* model, const Matrix44& transformation, bool dynamic);
 
 				~BulletBody();
 
