@@ -29,7 +29,7 @@ namespace simplicity
 {
 	namespace bullet
 	{
-		BulletBody::BulletBody(const Material& material, Model* model, const Matrix44& transformation, bool dynamic) :
+		BulletBody::BulletBody(const Material& material, Model* model, const Matrix44& transform, bool dynamic) :
 			body(NULL),
 			bulletModel(NULL),
 			linearAcceleration(0.0f, 0.0f, 0.0f),
@@ -37,7 +37,7 @@ namespace simplicity
 			material(material),
 			model(model),
 			motionState(NULL),
-			transformation(transformation)
+			transform(transform)
 		{
 			Box* box = dynamic_cast<Box*>(model);
 			if (box != NULL)
@@ -105,7 +105,7 @@ namespace simplicity
 				bulletModel->calculateLocalInertia(material.mass, localInertia);
 			}
 
-			motionState = new btDefaultMotionState(BulletMatrix::toBtTransform(transformation));
+			motionState = new btDefaultMotionState(BulletMatrix::toBtTransform(transform));
 
 			body = new btRigidBody(material.mass, motionState, bulletModel, localInertia);
 			body->setFriction(material.friction);
@@ -188,16 +188,16 @@ namespace simplicity
 			return model;
 		}
 
-		Matrix44& BulletBody::getTransformation()
+		Matrix44& BulletBody::getTransform()
 		{
-			transformation = BulletMatrix::toMatrix44(body->getWorldTransform());
-			return transformation;
+			transform = BulletMatrix::toMatrix44(body->getWorldTransform());
+			return transform;
 		}
 
-		const Matrix44& BulletBody::getTransformation() const
+		const Matrix44& BulletBody::getTransform() const
 		{
-			transformation = BulletMatrix::toMatrix44(body->getWorldTransform());
-			return transformation;
+			transform = BulletMatrix::toMatrix44(body->getWorldTransform());
+			return transform;
 		}
 
 		bool BulletBody::isDynamic()
@@ -232,9 +232,9 @@ namespace simplicity
 			body->setRollingFriction(material.friction);
 		}
 
-		void BulletBody::setTransformation(const Matrix44& transformation)
+		void BulletBody::setTransform(const Matrix44& transform)
 		{
-			body->setWorldTransform(BulletMatrix::toBtTransform(transformation));
+			body->setWorldTransform(BulletMatrix::toBtTransform(transform));
 		}
 	}
 }

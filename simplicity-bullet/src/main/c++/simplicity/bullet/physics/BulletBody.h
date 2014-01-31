@@ -28,7 +28,7 @@ namespace simplicity
 		class BulletBody : public Body
 		{
 			public:
-				BulletBody(const Material& material, Model* model, const Matrix44& transformation, bool dynamic);
+				BulletBody(const Material& material, Model* model, const Matrix44& transform, bool dynamic);
 
 				~BulletBody();
 
@@ -50,9 +50,9 @@ namespace simplicity
 
 				const Model* getModel() const;
 
-				Matrix44& getTransformation();
+				Matrix44& getTransform();
 
-				const Matrix44& getTransformation() const;
+				const Matrix44& getTransform() const;
 
 				bool isDynamic();
 
@@ -64,7 +64,7 @@ namespace simplicity
 
 				void setMaterial(const Material& material);
 
-				void setTransformation(const Matrix44& transformation);
+				void setTransform(const Matrix44& transform);
 
 			private:
 				btRigidBody* body;
@@ -81,7 +81,7 @@ namespace simplicity
 
 				btMotionState* motionState;
 
-				mutable Matrix44 transformation;
+				mutable Matrix44 transform;
 		};
 	}
 }
