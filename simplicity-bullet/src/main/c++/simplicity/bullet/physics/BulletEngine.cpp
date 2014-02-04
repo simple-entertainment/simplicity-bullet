@@ -58,9 +58,13 @@ namespace simplicity
 			for (int index = 0; index < collisionObjects.size(); index++)
 			{
 				Body* body = static_cast<Body*>(collisionObjects[index]->getUserPointer());
-				body->getEntity()->setTransform(BulletMatrix::toMatrix44(collisionObjects[index]->getWorldTransform()));
 
-				Simplicity::updateWorldRepresentations(*body->getEntity());
+				Matrix44 newTransform = BulletMatrix::toMatrix44(collisionObjects[index]->getWorldTransform());
+				if (newTransform != body->getEntity()->getTransform())
+				{
+					body->getEntity()->setTransform(newTransform);
+					Simplicity::updateWorldRepresentations(*body->getEntity());
+				}
 			}
 		}
 
