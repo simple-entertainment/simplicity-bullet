@@ -25,6 +25,8 @@
 #include "../math/BulletVector.h"
 #include "BulletBody.h"
 
+using namespace std;
+
 namespace simplicity
 {
 	namespace bullet

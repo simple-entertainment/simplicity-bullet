@@ -17,6 +17,8 @@
 #include "BulletBody.h"
 #include "BulletPhysicsFactory.h"
 
+using namespace std;
+
 namespace simplicity
 {
 	namespace bullet

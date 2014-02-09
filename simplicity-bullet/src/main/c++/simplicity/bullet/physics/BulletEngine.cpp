@@ -20,6 +20,8 @@
 #include "../math/BulletVector.h"
 #include "BulletEngine.h"
 
+using namespace std;
+
 namespace simplicity
 {
 	namespace bullet
