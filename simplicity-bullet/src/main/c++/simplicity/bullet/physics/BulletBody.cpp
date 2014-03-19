@@ -34,7 +34,6 @@ namespace simplicity
 		BulletBody::BulletBody(const Material& material, Model* model, const Matrix44& transform, bool dynamic) :
 			body(NULL),
 			bulletModel(NULL),
-			linearAcceleration(0.0f, 0.0f, 0.0f),
 			linearVelocity(0.0f, 0.0f, 0.0f),
 			material(material),
 			model(model),
@@ -162,11 +161,6 @@ namespace simplicity
 		btRigidBody* BulletBody::getBody()
 		{
 			return body;
-		}
-
-		const Vector3& BulletBody::getLinearAcceleration() const
-		{
-			return linearAcceleration; // TODO ???
 		}
 
 		const Vector3& BulletBody::getLinearVelocity() const

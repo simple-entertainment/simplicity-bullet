@@ -40,8 +40,6 @@ namespace simplicity
 
 				btRigidBody* getBody();
 
-				const Vector3& getLinearAcceleration() const;
-
 				const Vector3& getLinearVelocity() const;
 
 				float getMass() const;
@@ -70,8 +68,6 @@ namespace simplicity
 				btRigidBody* body;
 
 				btCollisionShape* bulletModel;
-
-				Vector3 linearAcceleration;
 
 				mutable Vector3 linearVelocity;
 
