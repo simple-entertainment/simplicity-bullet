@@ -27,21 +27,23 @@ namespace simplicity
 	namespace bullet
 	{
 		BulletEngine::BulletEngine(const Vector3& gravity, float fixedTimeStep) :
-			broadphase(NULL),
-			collisionConfiguration(NULL),
-			dispatcher(NULL),
+			broadphase(),
+			collisionConfiguration(),
+			dispatcher(),
+			entities(),
 			fixedTimeStep(fixedTimeStep),
 			gravity(gravity),
-			solver(NULL),
-			world(NULL)
+			solver(),
+			world()
 		{
 		}
 
 		void BulletEngine::addEntity(Entity& entity)
 		{
-			for (BulletBody* entityBody : entity.getComponents<BulletBody>())
+			for (BulletBody* body : entity.getComponents<BulletBody>())
 			{
-				world->addRigidBody(entityBody->getBody());
+				entities[body->getBody()] = &entity;
+				world->addRigidBody(body->getBody());
 			}
 		}
 
@@ -56,65 +58,43 @@ namespace simplicity
 				world->stepSimulation(fixedTimeStep, 1, fixedTimeStep);
 			}
 
+			// Update entity positions and orientations.
 			btCollisionObjectArray& collisionObjects = world->getCollisionObjectArray();
 			for (int index = 0; index < collisionObjects.size(); index++)
 			{
-				Body* body = static_cast<Body*>(collisionObjects[index]->getUserPointer());
+				Entity* entity = entities[collisionObjects[index]];
 
 				Matrix44 newTransform = BulletMatrix::toMatrix44(collisionObjects[index]->getWorldTransform());
-				if (newTransform != body->getEntity()->getTransform())
+				if (newTransform != entity->getTransform())
 				{
-					body->getEntity()->setTransform(newTransform);
-					Simplicity::updateWorldRepresentations(*body->getEntity());
+					entity->setTransform(newTransform);
+					Simplicity::updateWorldRepresentations(*entity);
 				}
 			}
 		}
 
 		void BulletEngine::destroy()
 		{
-			if (world != NULL)
-			{
-				delete world;
-			}
-
-			if (solver != NULL)
-			{
-				delete solver;
-			}
-
-			if (dispatcher != NULL)
-			{
-				delete dispatcher;
-			}
-
-			if (collisionConfiguration != NULL)
-			{
-				delete collisionConfiguration;
-			}
-
-			if (broadphase != NULL)
-			{
-				delete broadphase;
-			}
 		}
 
 		void BulletEngine::init()
 		{
-			broadphase = new btDbvtBroadphase();
-			collisionConfiguration = new btDefaultCollisionConfiguration();
-			dispatcher = new btCollisionDispatcher(collisionConfiguration);
-			solver = new btSequentialImpulseConstraintSolver;
-			world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+			broadphase.reset(new btDbvtBroadphase());
+			collisionConfiguration.reset(new btDefaultCollisionConfiguration());
+			dispatcher.reset(new btCollisionDispatcher(collisionConfiguration.get()));
+			solver.reset(new btSequentialImpulseConstraintSolver);
+			world.reset(new btDiscreteDynamicsWorld(dispatcher.get(), broadphase.get(), solver.get(),
+					collisionConfiguration.get()));
 
 			world->setGravity(BulletVector::toBtVector3(gravity));
 		}
 
 		void BulletEngine::removeEntity(const Entity& entity)
 		{
-			vector<BulletBody*> entityBodies = entity.getComponents<BulletBody>();
-			for (unsigned int index = 0; index < entityBodies.size(); index++)
+			for (BulletBody* body : entity.getComponents<BulletBody>())
 			{
-				world->removeRigidBody(entityBodies[index]->getBody());
+				world->removeRigidBody(body->getBody());
+				entities.erase(body->getBody());
 			}
 		}
 	}

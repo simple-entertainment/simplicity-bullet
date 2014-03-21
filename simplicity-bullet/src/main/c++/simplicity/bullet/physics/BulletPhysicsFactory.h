@@ -23,6 +23,11 @@ namespace simplicity
 {
 	namespace bullet
 	{
+		/**
+		 * <p>
+		 * A factory that creates physical bodies implemented using Bullet Physics.
+		 * </p>
+		 */
 		class BulletPhysicsFactory : public PhysicsFactory
 		{
 			public:

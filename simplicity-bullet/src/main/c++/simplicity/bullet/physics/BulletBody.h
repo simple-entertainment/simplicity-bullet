@@ -25,12 +25,20 @@ namespace simplicity
 {
 	namespace bullet
 	{
+		/**
+		 * <p>
+		 * A physical body implemented using Bullet Physics.
+		 * </p>
+		 */
 		class BulletBody : public Body
 		{
 			public:
-				BulletBody(const Material& material, Model* model, const Matrix44& transform, bool dynamic);
-
-				~BulletBody();
+				/**
+				 * @param material The material this body is constructed from.
+				 * @param model The geometry of the body.
+				 * @param transform The position and orientation of the body.
+				 */
+				BulletBody(const Material& material, Model* model, const Matrix44& transform);
 
 				void applyForce(const Vector3& force, const Vector3& position);
 
@@ -40,17 +48,11 @@ namespace simplicity
 
 				btRigidBody* getBody();
 
-				const Vector3& getLinearVelocity() const;
-
-				float getMass() const;
+				Vector3 getLinearVelocity() const;
 
 				const Material& getMaterial() const;
 
 				const Model* getModel() const;
-
-				Matrix44& getTransform();
-
-				const Matrix44& getTransform() const;
 
 				bool isDynamic();
 
@@ -58,26 +60,20 @@ namespace simplicity
 
 				void setLinearVelocity(const Vector3& linearVelocity);
 
-				void setMass(float mass);
-
 				void setMaterial(const Material& material);
 
-				void setTransform(const Matrix44& transform);
-
 			private:
-				btRigidBody* body;
+				std::unique_ptr<btRigidBody> body;
 
-				btCollisionShape* bulletModel;
-
-				mutable Vector3 linearVelocity;
+				std::unique_ptr<btCollisionShape> bulletModel;
 
 				Material material;
 
 				Model* model;
 
-				btMotionState* motionState;
+				std::unique_ptr<btMotionState> motionState;
 
-				mutable Matrix44 transform;
+				void createBulletModel();
 		};
 	}
 }

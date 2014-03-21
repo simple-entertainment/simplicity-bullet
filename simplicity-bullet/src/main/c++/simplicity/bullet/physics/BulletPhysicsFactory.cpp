@@ -26,7 +26,7 @@ namespace simplicity
 		unique_ptr<Body> BulletPhysicsFactory::createBody(const Body::Material& material, Model* model,
 				const Matrix44& transform, bool dynamic)
 		{
-			return unique_ptr<Body>(new BulletBody(material, model, transform, dynamic));
+			return unique_ptr<Body>(new BulletBody(material, model, transform));
 		}
 	}
 }

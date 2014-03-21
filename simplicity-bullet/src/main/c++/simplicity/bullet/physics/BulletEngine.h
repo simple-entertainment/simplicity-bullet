@@ -17,6 +17,8 @@
 #ifndef BULLETENGINE_H_
 #define BULLETENGINE_H_
 
+#include <map>
+
 #include <simplicity/engine/Engine.h>
 
 #include "BulletBody.h"
@@ -25,6 +27,11 @@ namespace simplicity
 {
 	namespace bullet
 	{
+		/**
+		 * <p>
+		 * A physics engine implemented using Bullet Physics.
+		 * </p>
+		 */
 		class BulletEngine : public Engine
 		{
 			public:
@@ -41,19 +48,21 @@ namespace simplicity
 				void removeEntity(const Entity& entity);
 
 			private:
-				btBroadphaseInterface* broadphase;
+				std::unique_ptr<btBroadphaseInterface> broadphase;
 
-				btCollisionConfiguration* collisionConfiguration;
+				std::unique_ptr<btCollisionConfiguration> collisionConfiguration;
 
-				btDispatcher* dispatcher;
+				std::unique_ptr<btDispatcher> dispatcher;
+
+				std::map<btCollisionObject*, Entity*> entities;
 
 				float fixedTimeStep;
 
 				Vector3 gravity;
 
-				btConstraintSolver* solver;
+				std::unique_ptr<btConstraintSolver> solver;
 
-				btDynamicsWorld* world;
+				std::unique_ptr<btDynamicsWorld> world;
 		};
 	}
 }
