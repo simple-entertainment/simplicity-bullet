@@ -46,6 +46,13 @@ namespace simplicity
 
 				void clearForces();
 
+				/**
+				 * <p>
+				 * Retrieves the Bullet Physics rigid body used to implement this body.
+				 * </p>
+				 *
+				 * @return
+				 */
 				btRigidBody* getBody();
 
 				Vector3 getLinearVelocity() const;
