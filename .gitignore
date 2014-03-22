@@ -1,5 +1,8 @@
 # Eclipse project management
 *.metadata
 *.settings
-simplicity-bullet/Debug
+simplicity-bullet/Debug (Linux)
+simplicity-bullet/Debug (Windows)
+simplicity-bullet/Release (Linux)
+simplicity-bullet/Release (Windows)
 
