@@ -68,7 +68,7 @@ namespace simplicity
 				if (newTransform != entity->getTransform())
 				{
 					entity->setTransform(newTransform);
-					Simplicity::updateWorldRepresentations(*entity);
+					Simplicity::getScene()->updateGraphs(*entity);
 				}
 			}
 		}
