@@ -25,7 +25,7 @@ namespace simplicity
 			btTransform toBtTransform(const Matrix44& original)
 			{
 				btTransform transform;
-				transform.setFromOpenGLMatrix(&original.getData()[0]);
+				transform.setFromOpenGLMatrix(original.getData());
 
 				return transform;
 			}
@@ -33,7 +33,7 @@ namespace simplicity
 			Matrix44 toMatrix44(const btTransform& original)
 			{
 				Matrix44 matrix;
-				original.getOpenGLMatrix(&matrix.getData()[0]);
+				original.getOpenGLMatrix(matrix.getData());
 
 				return matrix;
 			}
