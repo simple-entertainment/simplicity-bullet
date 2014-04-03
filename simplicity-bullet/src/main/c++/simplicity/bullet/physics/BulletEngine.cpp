@@ -75,6 +75,12 @@ namespace simplicity
 
 		void BulletEngine::destroy()
 		{
+			// Manual deletion to ensure correct order.
+			world.reset();
+			solver.reset();
+			dispatcher.reset();
+			collisionConfiguration.reset();
+			broadphase.reset();
 		}
 
 		void BulletEngine::init()

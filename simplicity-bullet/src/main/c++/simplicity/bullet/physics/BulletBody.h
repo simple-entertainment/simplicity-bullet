@@ -30,7 +30,7 @@ namespace simplicity
 		 * A physical body implemented using Bullet Physics.
 		 * </p>
 		 */
-		class BulletBody : public Body
+		class SIMPLE_API BulletBody : public Body
 		{
 			public:
 				/**

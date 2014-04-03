@@ -32,7 +32,7 @@ namespace simplicity
 		 * A physics engine implemented using Bullet Physics.
 		 * </p>
 		 */
-		class BulletEngine : public Engine
+		class SIMPLE_API BulletEngine : public Engine
 		{
 			public:
 				BulletEngine(const Vector3& gravity, float fixedTimeStep = 0.0f);
