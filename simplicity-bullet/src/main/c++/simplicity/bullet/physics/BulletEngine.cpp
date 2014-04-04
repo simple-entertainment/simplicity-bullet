@@ -38,15 +38,6 @@ namespace simplicity
 		{
 		}
 
-		void BulletEngine::addEntity(Entity& entity)
-		{
-			for (BulletBody* body : entity.getComponents<BulletBody>())
-			{
-				entities[body->getBody()] = &entity;
-				world->addRigidBody(body->getBody());
-			}
-		}
-
 		void BulletEngine::advance()
 		{
 			if (fixedTimeStep == 0.0f)
@@ -73,7 +64,37 @@ namespace simplicity
 			}
 		}
 
-		void BulletEngine::destroy()
+		void BulletEngine::onAddEntity(Entity& entity)
+		{
+			for (BulletBody* body : entity.getComponents<BulletBody>())
+			{
+				entities[body->getBody()] = &entity;
+				world->addRigidBody(body->getBody());
+			}
+		}
+
+		void BulletEngine::onPlay()
+		{
+			broadphase.reset(new btDbvtBroadphase());
+			collisionConfiguration.reset(new btDefaultCollisionConfiguration());
+			dispatcher.reset(new btCollisionDispatcher(collisionConfiguration.get()));
+			solver.reset(new btSequentialImpulseConstraintSolver);
+			world.reset(new btDiscreteDynamicsWorld(dispatcher.get(), broadphase.get(), solver.get(),
+				collisionConfiguration.get()));
+
+			world->setGravity(BulletVector::toBtVector3(gravity));
+		}
+
+		void BulletEngine::onRemoveEntity(Entity& entity)
+		{
+			for (BulletBody* body : entity.getComponents<BulletBody>())
+			{
+				world->removeRigidBody(body->getBody());
+				entities.erase(body->getBody());
+			}
+		}
+
+		void BulletEngine::onStop()
 		{
 			// Manual deletion to ensure correct order.
 			world.reset();
@@ -81,27 +102,6 @@ namespace simplicity
 			dispatcher.reset();
 			collisionConfiguration.reset();
 			broadphase.reset();
-		}
-
-		void BulletEngine::init()
-		{
-			broadphase.reset(new btDbvtBroadphase());
-			collisionConfiguration.reset(new btDefaultCollisionConfiguration());
-			dispatcher.reset(new btCollisionDispatcher(collisionConfiguration.get()));
-			solver.reset(new btSequentialImpulseConstraintSolver);
-			world.reset(new btDiscreteDynamicsWorld(dispatcher.get(), broadphase.get(), solver.get(),
-					collisionConfiguration.get()));
-
-			world->setGravity(BulletVector::toBtVector3(gravity));
-		}
-
-		void BulletEngine::removeEntity(const Entity& entity)
-		{
-			for (BulletBody* body : entity.getComponents<BulletBody>())
-			{
-				world->removeRigidBody(body->getBody());
-				entities.erase(body->getBody());
-			}
 		}
 	}
 }
