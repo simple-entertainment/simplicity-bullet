@@ -17,6 +17,8 @@
 #ifndef BULLETBODY_H_
 #define BULLETBODY_H_
 
+#include <memory>
+
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include <simplicity/physics/Body.h>
