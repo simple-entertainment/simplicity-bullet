@@ -57,7 +57,7 @@ namespace simplicity
 			if (isDynamic())
 			{
 				Box* box = dynamic_cast<Box*>(model);
-				if (box != NULL)
+				if (box != nullptr)
 				{
 					float minEdgeLength = min(box->getHalfXLength(), min(box->getHalfYLength(), box->getHalfZLength()));
 					body->setCcdMotionThreshold(minEdgeLength);
@@ -84,21 +84,21 @@ namespace simplicity
 		void BulletBody::createBulletModel()
 		{
 			Box* box = dynamic_cast<Box*>(model);
-			if (box != NULL)
+			if (box != nullptr)
 			{
 				bulletModel.reset(new btBoxShape(btVector3(box->getHalfXLength(), box->getHalfYLength(),
 						box->getHalfZLength())));
 			}
 
 			Cube* cube = dynamic_cast<Cube*>(model);
-			if (cube != NULL)
+			if (cube != nullptr)
 			{
 				bulletModel.reset(new btBoxShape(btVector3(cube->getHalfEdgeLength(), cube->getHalfEdgeLength(),
 					cube->getHalfEdgeLength())));
 			}
 
 			Mesh* mesh = dynamic_cast<Mesh*>(model);
-			if (mesh != NULL)
+			if (mesh != nullptr)
 			{
 				if (isDynamic())
 				{
@@ -136,13 +136,13 @@ namespace simplicity
 			}
 
 			Plane* plane = dynamic_cast<Plane*>(model);
-			if (plane != NULL)
+			if (plane != nullptr)
 			{
 				bulletModel.reset(new btStaticPlaneShape(BulletVector::toBtVector3(plane->getNormal()), 1.0f));
 			}
 
 			Sphere* sphere = dynamic_cast<Sphere*>(model);
-			if (sphere != NULL)
+			if (sphere != nullptr)
 			{
 				bulletModel.reset(new btSphereShape(sphere->getRadius()));
 			}
