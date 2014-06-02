@@ -102,11 +102,11 @@ namespace simplicity
 			{
 				if (isDynamic())
 				{
-					vector<btVector3> points(mesh->getIndices().size());
+					vector<btVector3> points(mesh->getIndexCount());
 
-					vector<unsigned int> indices = mesh->getIndices();
-					vector<Vertex> vertices = mesh->getVertices();
-					for (unsigned int index = 0; index < indices.size(); index += 3)
+					unsigned int* indices = mesh->getIndices();
+					Vertex* vertices = mesh->getVertices();
+					for (unsigned int index = 0; index < mesh->getIndexCount(); index += 3)
 					{
 						points[index] = BulletVector::toBtVector3(vertices[indices[index]].position);
 						points[index + 1] = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
@@ -120,9 +120,9 @@ namespace simplicity
 				{
 					btTriangleMesh* meshData = new btTriangleMesh;
 
-					vector<unsigned int> indices = mesh->getIndices();
-					vector<Vertex> vertices = mesh->getVertices();
-					for (unsigned int index = 0; index < indices.size(); index += 3)
+					unsigned int* indices = mesh->getIndices();
+					Vertex* vertices = mesh->getVertices();
+					for (unsigned int index = 0; index < mesh->getIndexCount(); index += 3)
 					{
 						btVector3 vertex0 = BulletVector::toBtVector3(vertices[indices[index]].position);
 						btVector3 vertex1 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
