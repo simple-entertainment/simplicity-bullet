@@ -32,7 +32,7 @@ namespace simplicity
 		{
 			public:
 				std::unique_ptr<Body> createBody(const Body::Material& material, Model* model,
-						const Matrix44& transform, bool dynamic);
+						const Matrix44& transform, bool dynamic) override;
 		};
 	}
 }

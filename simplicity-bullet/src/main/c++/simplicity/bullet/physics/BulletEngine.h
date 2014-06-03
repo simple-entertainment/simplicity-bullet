@@ -37,15 +37,15 @@ namespace simplicity
 			public:
 				BulletEngine(const Vector3& gravity, float fixedTimeStep = 0.0f);
 
-				void advance();
+				void advance() override;
 
-				void onAddEntity(Entity& entity);
+				void onAddEntity(Entity& entity) override;
 
-				void onPlay();
+				void onPlay() override;
 
-				void onRemoveEntity(Entity& entity);
+				void onRemoveEntity(Entity& entity) override;
 
-				void onStop();
+				void onStop() override;
 
 			private:
 				std::unique_ptr<btBroadphaseInterface> broadphase;

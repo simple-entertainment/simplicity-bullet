@@ -42,11 +42,11 @@ namespace simplicity
 				 */
 				BulletBody(const Material& material, Model* model, const Matrix44& transform);
 
-				void applyForce(const Vector3& force, const Vector3& position);
+				void applyForce(const Vector3& force, const Vector3& position) override;
 
-				void applyTorque(const Vector3& torque);
+				void applyTorque(const Vector3& torque) override;
 
-				void clearForces();
+				void clearForces() override;
 
 				/**
 				 * <p>
@@ -57,19 +57,19 @@ namespace simplicity
 				 */
 				btRigidBody* getBody();
 
-				Vector3 getLinearVelocity() const;
+				Vector3 getLinearVelocity() const override;
 
-				const Material& getMaterial() const;
+				const Material& getMaterial() const override;
 
-				const Model* getModel() const;
+				const Model* getModel() const override;
 
-				bool isDynamic();
+				bool isDynamic() override;
 
-				void setDynamic(bool dynamic);
+				void setDynamic(bool dynamic) override;
 
-				void setLinearVelocity(const Vector3& linearVelocity);
+				void setLinearVelocity(const Vector3& linearVelocity) override;
 
-				void setMaterial(const Material& material);
+				void setMaterial(const Material& material) override;
 
 			private:
 				std::unique_ptr<btRigidBody> body;
