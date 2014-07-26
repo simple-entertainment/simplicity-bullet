@@ -100,39 +100,37 @@ namespace simplicity
 			Mesh* mesh = dynamic_cast<Mesh*>(model);
 			if (mesh != nullptr)
 			{
+				const MeshData& meshData = mesh->getData();
+
 				if (isDynamic())
 				{
-					vector<btVector3> points(mesh->getIndexCount());
+					vector<btVector3> points(meshData.size());
 
-					unsigned int* indices = mesh->getIndices();
-					Vertex* vertices = mesh->getVertices();
-					for (unsigned int index = 0; index < mesh->getIndexCount(); index += 3)
+					for (unsigned int index = 0; index < meshData.size(); index += 3)
 					{
-						points[index] = BulletVector::toBtVector3(vertices[indices[index]].position);
-						points[index + 1] = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
-						points[index + 2] = BulletVector::toBtVector3(vertices[indices[index + 2]].position);
-
+						points[index] = BulletVector::toBtVector3(meshData[index].position);
+						points[index + 1] = BulletVector::toBtVector3(meshData[index + 1].position);
+						points[index + 2] = BulletVector::toBtVector3(meshData[index + 2].position);
 					}
 
 					bulletModel.reset(new btConvexHullShape((btScalar*) points.data(), points.size()));
 				}
 				else
 				{
-					btTriangleMesh* meshData = new btTriangleMesh;
+					btTriangleMesh* bulletMesh = new btTriangleMesh;
 
-					unsigned int* indices = mesh->getIndices();
-					Vertex* vertices = mesh->getVertices();
-					for (unsigned int index = 0; index < mesh->getIndexCount(); index += 3)
+					for (unsigned int index = 0; index < meshData.size(); index += 3)
 					{
-						btVector3 vertex0 = BulletVector::toBtVector3(vertices[indices[index]].position);
-						btVector3 vertex1 = BulletVector::toBtVector3(vertices[indices[index + 1]].position);
-						btVector3 vertex2 = BulletVector::toBtVector3(vertices[indices[index + 2]].position);
-						meshData->addTriangle(vertex0, vertex1, vertex2);
-
+						btVector3 vertex0 = BulletVector::toBtVector3(meshData[index].position);
+						btVector3 vertex1 = BulletVector::toBtVector3(meshData[index + 1].position);
+						btVector3 vertex2 = BulletVector::toBtVector3(meshData[index + 2].position);
+						bulletMesh->addTriangle(vertex0, vertex1, vertex2);
 					}
 
-					bulletModel.reset(new btBvhTriangleMeshShape(meshData, true));
+					bulletModel.reset(new btBvhTriangleMeshShape(bulletMesh, true));
 				}
+
+				mesh->releaseData();
 			}
 
 			Plane* plane = dynamic_cast<Plane*>(model);
