@@ -6,9 +6,15 @@ include(../simplicity/simplicity-common.cmake)
 #########################
 project(simplicity-bullet)
 
+# Project Dependencies
+#########################
+
+# Bullet
+add_subdirectory(lib/bullet3)
+
 # Source
 #########################
-file(GLOB_RECURSE SRC_FILES src/bullet/c++/*.cpp src/bullet/c++/*.h src/main/c++/*.cpp src/main/c++/*.h)
+file(GLOB_RECURSE SRC_FILES src/main/c++/*.cpp src/main/c++/*.h)
 
 # Target
 #########################
@@ -19,8 +25,10 @@ target_include_directories(simplicity-bullet PUBLIC src/main/c++)
 #########################
 
 # Bullet
-target_include_directories(simplicity-bullet PUBLIC src/bullet/c++)
-target_include_directories(simplicity-bullet PUBLIC src/bullet/c++/bullet)
+target_include_directories(simplicity-bullet PUBLIC lib/bullet3/src)
+target_link_libraries(simplicity-bullet BulletDynamics)
+target_link_libraries(simplicity-bullet BulletCollision)
+target_link_libraries(simplicity-bullet LinearMath)
 
 # Simplicity
 target_link_libraries(simplicity-bullet simplicity)

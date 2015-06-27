@@ -17,7 +17,7 @@
 #ifndef BULLETMATRIX_H_
 #define BULLETMATRIX_H_
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <simplicity/math/Matrix.h>
 

@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <simplicity/physics/Body.h>
 

@@ -17,7 +17,7 @@
 #ifndef BULLETVECTOR_H_
 #define BULLETVECTOR_H_
 
-#include <bullet/btBulletDynamicsCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #include <simplicity/math/Vector.h>
 
