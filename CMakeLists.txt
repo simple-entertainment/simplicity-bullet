@@ -18,7 +18,7 @@ file(GLOB_RECURSE SRC_FILES src/main/c++/*.cpp src/main/c++/*.h)
 
 # Target
 #########################
-add_library(simplicity-bullet STATIC ${SRC_FILES})
+add_library(simplicity-bullet ${SIMPLE_LINK_TYPE} ${SRC_FILES})
 target_include_directories(simplicity-bullet PUBLIC src/main/c++)
 
 # Target Dependencies
