@@ -26,13 +26,13 @@ namespace simplicity
 {
 	namespace bullet
 	{
-		BulletEngine::BulletEngine(const Vector3& gravity, float fixedTimeStep) :
+		BulletEngine::BulletEngine() :
 			broadphase(),
 			collisionConfiguration(),
 			dispatcher(),
 			entities(),
-			fixedTimeStep(fixedTimeStep),
-			gravity(gravity),
+			fixedTimeStep(0.0f),
+			gravity(Vector3(0.0f, -10.0f, 0.0f)),
 			solver(),
 			world()
 		{
@@ -62,6 +62,16 @@ namespace simplicity
 					Simplicity::getScene()->updateGraphs(*entity);
 				}
 			}
+		}
+
+		float BulletEngine::getFixedTimeStep()
+		{
+			return fixedTimeStep;
+		}
+
+		Vector3 BulletEngine::getGravity()
+		{
+			return gravity;
 		}
 
 		void BulletEngine::onAddEntity(Entity& entity)
@@ -102,6 +112,21 @@ namespace simplicity
 			dispatcher.reset();
 			collisionConfiguration.reset();
 			broadphase.reset();
+		}
+
+		void BulletEngine::setFixedTimeStep(float fixedTimeStep)
+		{
+			this->fixedTimeStep = fixedTimeStep;
+		}
+
+		void BulletEngine::setGravity(const Vector3& gravity)
+		{
+			this->gravity = gravity;
+
+			if (world != nullptr)
+			{
+				world->setGravity(BulletVector::toBtVector3(gravity));
+			}
 		}
 	}
 }

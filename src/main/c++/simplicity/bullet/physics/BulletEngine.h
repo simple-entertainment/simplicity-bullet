@@ -35,9 +35,13 @@ namespace simplicity
 		class SIMPLE_API BulletEngine : public Engine
 		{
 			public:
-				BulletEngine(const Vector3& gravity, float fixedTimeStep = 0.0f);
+				BulletEngine();
 
 				void advance() override;
+
+				float getFixedTimeStep();
+
+				Vector3 getGravity();
 
 				void onAddEntity(Entity& entity) override;
 
@@ -46,6 +50,10 @@ namespace simplicity
 				void onRemoveEntity(Entity& entity) override;
 
 				void onStop() override;
+
+				void setFixedTimeStep(float fixedTimeStep);
+
+				void setGravity(const Vector3& gravity);
 
 			private:
 				std::unique_ptr<btBroadphaseInterface> broadphase;
