@@ -17,11 +17,9 @@
 #ifndef BULLETENGINE_H_
 #define BULLETENGINE_H_
 
-#include <map>
-
 #include <simplicity/engine/Engine.h>
 
-#include "BulletBody.h"
+#include "BulletEngineState.h"
 
 namespace simplicity
 {
@@ -37,40 +35,28 @@ namespace simplicity
 			public:
 				BulletEngine();
 
-				void advance() override;
+				void advance(Scene& scene) override;
 
 				float getFixedTimeStep();
 
 				Vector3 getGravity();
 
-				void onAddEntity(Entity& entity) override;
+				void onBeforeOpenScene(Scene& scene) override;
 
-				void onPlay() override;
+				void onCloseScene(Scene& scene) override;
 
-				void onRemoveEntity(Entity& entity) override;
-
-				void onStop() override;
+				void onOpenScene(Scene& scene) override;
 
 				void setFixedTimeStep(float fixedTimeStep);
 
 				void setGravity(const Vector3& gravity);
 
 			private:
-				std::unique_ptr<btBroadphaseInterface> broadphase;
-
-				std::unique_ptr<btCollisionConfiguration> collisionConfiguration;
-
-				std::unique_ptr<btDispatcher> dispatcher;
-
-				std::map<btCollisionObject*, Entity*> entities;
-
 				float fixedTimeStep;
 
 				Vector3 gravity;
 
-				std::unique_ptr<btConstraintSolver> solver;
-
-				std::unique_ptr<btDynamicsWorld> world;
+				std::map<Scene*, BulletEngineState*> state;
 		};
 	}
 }
