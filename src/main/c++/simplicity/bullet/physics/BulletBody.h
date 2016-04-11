@@ -21,6 +21,7 @@
 
 #include <btBulletDynamicsCommon.h>
 
+#include <simplicity/model/Mesh.h>
 #include <simplicity/physics/Body.h>
 
 namespace simplicity
@@ -37,10 +38,11 @@ namespace simplicity
 			public:
 				/**
 				 * @param material The material this body is constructed from.
-				 * @param model The geometry of the body.
+				 * @param mesh The geometry of the body.
+				 * @param bounds a bounding volume containing the body.
 				 * @param transform The position and orientation of the body.
 				 */
-				BulletBody(const Material& material, Model* model, const Matrix44& transform);
+				BulletBody(const Material& material, const Mesh& mesh, const Shape& bounds, const Matrix44& transform);
 
 				void applyForce(const Vector3& force, const Vector3& position) override;
 
@@ -61,8 +63,6 @@ namespace simplicity
 
 				const Material& getMaterial() const override;
 
-				const Model* getModel() const override;
-
 				bool isDynamic() override;
 
 				void setDynamic(bool dynamic) override;
@@ -74,15 +74,13 @@ namespace simplicity
 			private:
 				std::unique_ptr<btRigidBody> body;
 
-				std::unique_ptr<btCollisionShape> bulletModel;
-
 				Material material;
-
-				Model* model;
 
 				std::unique_ptr<btMotionState> motionState;
 
-				void createBulletModel();
+				std::unique_ptr<btCollisionShape> shape;
+
+				void createBulletShape(const Mesh& mesh);
 		};
 	}
 }

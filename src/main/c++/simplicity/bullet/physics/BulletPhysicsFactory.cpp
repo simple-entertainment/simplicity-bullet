@@ -23,10 +23,11 @@ namespace simplicity
 {
 	namespace bullet
 	{
-		unique_ptr<Body> BulletPhysicsFactory::createBodyInternal(const Body::Material& material, Model* model,
-																  const Matrix44& transform, bool /* dynamic */)
+		unique_ptr<Body> BulletPhysicsFactory::createBodyInternal(const Body::Material& material, const Mesh& mesh,
+																  const Shape& bounds, const Matrix44& transform,
+																  bool dynamic)
 		{
-			return unique_ptr<Body>(new BulletBody(material, model, transform));
+			return unique_ptr<Body>(new BulletBody(material, mesh, bounds, transform));
 		}
 	}
 }

@@ -15,11 +15,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 #include <simplicity/math/MathFunctions.h>
-#include <simplicity/model/Mesh.h>
-#include <simplicity/model/Plane.h>
 #include <simplicity/model/shape/Box.h>
-#include <simplicity/model/shape/Cube.h>
-#include <simplicity/model/shape/Sphere.h>
 
 #include "../math/BulletMatrix.h"
 #include "../math/BulletVector.h"
@@ -31,24 +27,24 @@ namespace simplicity
 {
 	namespace bullet
 	{
-		BulletBody::BulletBody(const Material& material, Model* model, const Matrix44& transform) :
+		BulletBody::BulletBody(const Material& material, const Mesh& mesh, const Shape& bounds,
+							   const Matrix44& transform) :
 			body(),
-			bulletModel(),
 			material(material),
-			model(model),
-			motionState()
+			motionState(),
+			shape(nullptr)
 		{
-			createBulletModel();
+			createBulletShape(mesh);
 
 			btVector3 localInertia(0.0f, 0.0f, 0.0f);
 			if (isDynamic())
 			{
-				bulletModel->calculateLocalInertia(material.mass, localInertia);
+				shape->calculateLocalInertia(material.mass, localInertia);
 			}
 
 			motionState.reset(new btDefaultMotionState(BulletMatrix::toBtTransform(transform)));
 
-			body.reset(new btRigidBody(material.mass, motionState.get(), bulletModel.get(), localInertia));
+			body.reset(new btRigidBody(material.mass, motionState.get(), shape.get(), localInertia));
 			body->setFriction(material.friction);
 			body->setRestitution(material.restitution);
 			body->setRollingFriction(material.friction);
@@ -56,10 +52,10 @@ namespace simplicity
 			// Continuous collision detection.
 			if (isDynamic())
 			{
-				Box* box = dynamic_cast<Box*>(model);
-				if (box != nullptr)
+				if (bounds.getTypeID() == Box::TYPE_ID)
 				{
-					float minEdgeLength = min(box->getHalfXLength(), min(box->getHalfYLength(), box->getHalfZLength()));
+					const Box& box = static_cast<const Box&>(bounds);
+					float minEdgeLength = min(box.getHalfXLength(), min(box.getHalfYLength(), box.getHalfZLength()));
 					body->setCcdMotionThreshold(minEdgeLength);
 					body->setCcdSweptSphereRadius(minEdgeLength * 0.25f);
 				}
@@ -81,69 +77,39 @@ namespace simplicity
 			body->clearForces();
 		}
 
-		void BulletBody::createBulletModel()
+		void BulletBody::createBulletShape(const Mesh& mesh)
 		{
-			Box* box = dynamic_cast<Box*>(model);
-			if (box != nullptr)
-			{
-				bulletModel.reset(new btBoxShape(btVector3(box->getHalfXLength(), box->getHalfYLength(),
-						box->getHalfZLength())));
-			}
+			const MeshData& meshData = mesh.getData();
 
-			Cube* cube = dynamic_cast<Cube*>(model);
-			if (cube != nullptr)
+			if (isDynamic())
 			{
-				bulletModel.reset(new btBoxShape(btVector3(cube->getHalfEdgeLength(), cube->getHalfEdgeLength(),
-					cube->getHalfEdgeLength())));
-			}
+				vector<btVector3> points(meshData.size());
 
-			Mesh* mesh = dynamic_cast<Mesh*>(model);
-			if (mesh != nullptr)
-			{
-				const MeshData& meshData = mesh->getData();
-
-				if (isDynamic())
+				for (unsigned int index = 0; index < meshData.size(); index += 3)
 				{
-					vector<btVector3> points(meshData.size());
-
-					for (unsigned int index = 0; index < meshData.size(); index += 3)
-					{
-						points[index] = BulletVector::toBtVector3(meshData[index].position);
-						points[index + 1] = BulletVector::toBtVector3(meshData[index + 1].position);
-						points[index + 2] = BulletVector::toBtVector3(meshData[index + 2].position);
-					}
-
-					bulletModel.reset(new btConvexHullShape((btScalar*) points.data(), points.size()));
-				}
-				else
-				{
-					btTriangleMesh* bulletMesh = new btTriangleMesh;
-
-					for (unsigned int index = 0; index < meshData.size(); index += 3)
-					{
-						btVector3 vertex0 = BulletVector::toBtVector3(meshData[index].position);
-						btVector3 vertex1 = BulletVector::toBtVector3(meshData[index + 1].position);
-						btVector3 vertex2 = BulletVector::toBtVector3(meshData[index + 2].position);
-						bulletMesh->addTriangle(vertex0, vertex1, vertex2);
-					}
-
-					bulletModel.reset(new btBvhTriangleMeshShape(bulletMesh, true));
+					points[index] = BulletVector::toBtVector3(meshData[index].position);
+					points[index + 1] = BulletVector::toBtVector3(meshData[index + 1].position);
+					points[index + 2] = BulletVector::toBtVector3(meshData[index + 2].position);
 				}
 
-				mesh->releaseData();
+				shape.reset(new btConvexHullShape((btScalar*) points.data(), points.size()));
+			}
+			else
+			{
+				btTriangleMesh* bulletMesh = new btTriangleMesh;
+
+				for (unsigned int index = 0; index < meshData.size(); index += 3)
+				{
+					btVector3 vertex0 = BulletVector::toBtVector3(meshData[index].position);
+					btVector3 vertex1 = BulletVector::toBtVector3(meshData[index + 1].position);
+					btVector3 vertex2 = BulletVector::toBtVector3(meshData[index + 2].position);
+					bulletMesh->addTriangle(vertex0, vertex1, vertex2);
+				}
+
+				shape.reset(new btBvhTriangleMeshShape(bulletMesh, true));
 			}
 
-			Plane* plane = dynamic_cast<Plane*>(model);
-			if (plane != nullptr)
-			{
-				bulletModel.reset(new btStaticPlaneShape(BulletVector::toBtVector3(plane->getNormal()), 1.0f));
-			}
-
-			Sphere* sphere = dynamic_cast<Sphere*>(model);
-			if (sphere != nullptr)
-			{
-				bulletModel.reset(new btSphereShape(sphere->getRadius()));
-			}
+			mesh.releaseData();
 		}
 
 		btRigidBody* BulletBody::getBody()
@@ -159,11 +125,6 @@ namespace simplicity
 		const Body::Material& BulletBody::getMaterial() const
 		{
 			return material;
-		}
-
-		const Model* BulletBody::getModel() const
-		{
-			return model;
 		}
 
 		bool BulletBody::isDynamic()

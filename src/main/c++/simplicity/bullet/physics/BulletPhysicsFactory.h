@@ -31,8 +31,8 @@ namespace simplicity
 		class SIMPLE_API BulletPhysicsFactory : public PhysicsFactory
 		{
 			public:
-				std::unique_ptr<Body> createBodyInternal(const Body::Material& material, Model* model,
-														 const Matrix44& transform, bool dynamic) override;
+				std::unique_ptr<Body> createBodyInternal(const Body::Material& material, const Mesh& mesh,
+														 const Shape& bounds, const Matrix44& transform, bool dynamic) override;
 		};
 	}
 }
